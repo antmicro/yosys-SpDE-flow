@@ -9,7 +9,10 @@ SPDE_EDIFS_DIR=${4%/} # directory in which the EDIFS produced by Python script f
 
 TO_SPDE_CONVERT_SCRIPT=$SCRIPTDIR/convert-lut-inits.py
 
+rm -rf $YOSYS_EDIFS_DIR/*.edf
+rm -rf $SPDE_EDIFS_DIR/*.edf
+
 mkdir -p $YOSYS_EDIFS_DIR
 mkdir -p $SPDE_EDIFS_DIR
-fd -e v --full-path $VERILOG_INPUTS/ -x $YOSYS_EXEC -p "read_verilog {}; synth_quicklogic -edif $YOSYS_EDIFS_DIR/{/.}.edf"
+fd -e v --full-path $VERILOG_INPUTS/ -x $YOSYS_EXEC -p "read_verilog {}; synth_quicklogic -flatten -edif $YOSYS_EDIFS_DIR/{/.}.edf"
 fd -e edf --full-path $YOSYS_EDIFS_DIR -x python $TO_SPDE_CONVERT_SCRIPT {} $SPDE_EDIFS_DIR/{/.}.edf
