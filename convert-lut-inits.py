@@ -31,6 +31,7 @@ if __name__ == '__main__':
 
     with open(args.input, 'r') as infile:
         with open(args.output, 'w') as outfile:
+            lines = []
             for line in infile:
                 if '(instance ' in line:
                     print('New instance')
@@ -45,16 +46,19 @@ if __name__ == '__main__':
                     intpre = '(integer '
                     initdef = line.find(intpre)
                     if initdef == -1:
-                        intpre = '(string '
+                        intpre = '(string "'
                     initdef = line.find(intpre)
-                    initdefdel = '")' if intpre == '(string ' else ')'
+                    initdefdel = '")' if intpre == '(string "' else ')'
                     initdefend = line.find(initdefdel, initdef)
                     num = line[initdef + len(intpre):initdefend]
+                    print(line)
+                    print(num)
                     newval = convert_lut(luttype, num)
                     print(newval)
                     line = line.replace(line[initdef:initdefend + len(initdefdel)], '(string "{}")'.format(newval))
                     print(line[initdef:initdefend + 1])
                     print(line)
-                outfile.write(line)
+                lines.append(line)
+            outfile.writelines(lines)
 
 
