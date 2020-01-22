@@ -34,15 +34,12 @@ if __name__ == '__main__':
             lines = []
             for line in infile:
                 if '(instance ' in line:
-                    print('New instance')
                     luttype = -1
                 elif '(cellRef LUT' in line:
-                    print('LUT instance: {}'.format(line))
                     s = '(cellRef LUT'
                     numloc = line.find(s) + len(s)
                     luttype = int(line[numloc:].split(' ')[0])
                 elif '(property INIT' in line and luttype > 0:
-                    print('INIT entry found, converting: {}'.format(line))
                     intpre = '(integer '
                     initdef = line.find(intpre)
                     if initdef == -1:
@@ -51,13 +48,8 @@ if __name__ == '__main__':
                     initdefdel = '")' if intpre == '(string "' else ')'
                     initdefend = line.find(initdefdel, initdef)
                     num = line[initdef + len(intpre):initdefend]
-                    print(line)
-                    print(num)
                     newval = convert_lut(luttype, num)
-                    print(newval)
                     line = line.replace(line[initdef:initdefend + len(initdefdel)], '(string "{}")'.format(newval))
-                    print(line[initdef:initdefend + 1])
-                    print(line)
                 lines.append(line)
             outfile.writelines(lines)
 
