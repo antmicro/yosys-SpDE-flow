@@ -7,7 +7,7 @@ VERILOG_INPUTS=${2%/} # directory with verilogs to process
 YOSYS_EDIFS_DIR=${3%/} # directory in which the EDIFS produced by Yosys should be stored
 SPDE_EDIFS_DIR=${4%/} # directory in which the EDIFS produced by Python script for SpDE should be stored
 
-TO_SPDE_CONVERT_SCRIPT=$SCRIPTDIR/postprocess-yosys-edif.py
+TO_SPDE_CONVERT_SCRIPT=$SCRIPTDIR/yosys-spde-flow/postprocess-yosys-edif.py
 
 rm -rf $YOSYS_EDIFS_DIR/*.edf
 rm -rf $SPDE_EDIFS_DIR/*.edf
