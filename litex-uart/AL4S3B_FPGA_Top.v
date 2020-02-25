@@ -47,7 +47,7 @@ gclkbuff u_gclkbuff_reset1 ( .A(Sys_Clk1_Rst) , .Z(RST_FB21) );
 gclkbuff u_gclkbuff_clock1  ( .A(Sys_Clk1   ) , .Z(CLK_FB21) );  // Clock 21 
 
 top u_soc (
-    .wb_adr ( WBs_ADR ),
+    .wb_adr ( WBs_ADR[16:2] ),
     .wb_dat_w ( WBs_WR_DAT ),
     .wb_dat_r ( WBs_RD_DAT ),
     .wb_sel ( WBs_BYTE_STB ),
@@ -57,11 +57,11 @@ top u_soc (
     .wb_we  ( WBs_WE  ),
     .wb_cti ( WBs_CTI ),
     .wb_bte ( WBs_BTE ),
-    .clk100 ( WB_CLK ),
+    .sys_clk ( WB_CLK ),
     .wb_err ( WBs_ERR ),
     .serial_tx( tx ),
     .serial_rx( rx ),
-    .rst0 ( 0 ),
+    .sys_rst ( WB_RST_FPGA ),
     );
 
 // Empty Verilog model of QLAL4S3B

@@ -1,3 +1,5 @@
 #!/bin/bash
 
-python3 uartsoc.py --no-compile-software --no-compile-gateware --integrated-sram-size=0 --integrated-rom-size=0
+LITEX_GEN=${1%} # Path to litex_gen.py script
+
+python $LITEX_GEN --with-uart --uart-no-fifo --no-compile-gateware --no-compile-software
