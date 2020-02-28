@@ -1,12 +1,14 @@
 `timescale 1ns / 10ps
 
-module AL4S3B_FPGA_Top ( PWM );
+module AL4S3B_FPGA_Top (
+pwm0,
+pwm1,
+pwm2,
+);
 
-//
-//PWM
-//
-output PWM;
-wire PWM;
+output wire pwm0;
+output wire pwm1;
+output wire pwm2;
 
 wire WB_CLK;
 wire Sys_Clk0;
@@ -46,8 +48,8 @@ gclkbuff u_gclkbuff_clock ( .A(Sys_Clk0             ) , .Z(WB_CLK     )   ); // 
 gclkbuff u_gclkbuff_reset1 ( .A(Sys_Clk1_Rst) , .Z(RST_FB21) );  
 gclkbuff u_gclkbuff_clock1  ( .A(Sys_Clk1   ) , .Z(CLK_FB21) );  // Clock 21 
 
-LitePWM u_pwm (
-    .wb_adr ( WBs_ADR ),
+top u_soc (
+    .wb_adr ( WBs_ADR[16:2] ),
     .wb_dat_w ( WBs_WR_DAT ),
     .wb_dat_r ( WBs_RD_DAT ),
     .wb_sel ( WBs_BYTE_STB ),
@@ -57,9 +59,12 @@ LitePWM u_pwm (
     .wb_we  ( WBs_WE  ),
     .wb_cti ( WBs_CTI ),
     .wb_bte ( WBs_BTE ),
-    .clk100 ( WB_CLK ),
+    .sys_clk ( WB_CLK ),
     .wb_err ( WBs_ERR ),
-    .pwm0 ( PWM ),
+    .pwm0( pwm0 ),
+    .pwm1( pwm1 ),
+    .pwm2( pwm2 ),
+    .sys_rst ( WB_RST_FPGA ),
     );
 
 // Empty Verilog model of QLAL4S3B

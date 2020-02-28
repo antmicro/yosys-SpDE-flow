@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 pwmsoc.py --no-compile-software --no-compile-gateware --integrated-sram-size=0 --integrated-rom-size=0
+python pwm_soc.py --with-pwm --no-compile-gateware --no-compile-software
