@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+import re
 
 
 def convert_lut_init_to_hex(val: str) -> str:
@@ -73,28 +74,42 @@ def fix_array_line(line: str, arraysizes: dict) -> str:
         str: Function yields lines that are produced during conversion of
             declarations and accesses
     """
+    arrayregex = r'\(array\s*\(rename\s*(?P<name>[A-Za-z_$][A-Za-z0-9_$]*)\s*\"(?P<verilogname>[A-Za-z_$][A-Za-z0-9_$]*)\s*\((?P<left>[0-9]+)\s*:\s*(?P<right>[0-9]+)\s*\)\"\)\s*(?P<edifsize>[0-9]+)\s*\)'  # noqa: E501
     arrayid = line.find('(array ')
     if arrayid != -1:
         # extract whole array declaration
         closing = find_closing_bracket(line, arrayid) + 1
         tocut = line[arrayid:closing]
-        # tokenize it
-        tokens = tocut.split(' ')
-        # last member is ``WIDTH)`` so we need to remove parentheses
-        numelements = int(tokens[-1][:-1])
-        # second token is EDIF name for array
-        variable_base = tokens[2]
-        # third token is ``verilog_name(maxid:minid)``, we only take the name
-        orig_var = tokens[3].split('(')[0][1:]
+        arraydef = re.match(arrayregex, tocut)
+        if not arraydef:
+            raise Exception(
+                    'Array declaration format not supported:  '.format(tocut))
+        left = int(arraydef.group('left'))
+        right = int(arraydef.group('right'))
+        numelements = (left if left > right else right) + 1
+        variable_base = arraydef.group('name')
+        orig_var = arraydef.group('verilogname')
+        if variable_base in arraysizes:
+            raise Exception(
+                    'There is already an array with name "{}" declared'.format(
+                        variable_base))
         arraysizes[variable_base] = numelements
-        for i in range(numelements):
-            entrydef = '(rename {}_{}_ "{}({})")'.format(
+        if left == right == 0:
+            entrydef = '(rename {} "{}({})")'.format(
                     variable_base,
-                    i,
                     orig_var,
-                    i)
+                    0)
             newline = line.replace(tocut, entrydef)
             yield newline
+        else:
+            for i in range(numelements):
+                entrydef = '(rename {}_{}_ "{}({})")'.format(
+                        variable_base,
+                        i,
+                        orig_var,
+                        i)
+                newline = line.replace(tocut, entrydef)
+                yield newline
     else:
         memberid = line.find('(member ')
         if memberid != -1:
